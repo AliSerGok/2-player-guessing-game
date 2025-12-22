@@ -1,19 +1,24 @@
 #!/bin/bash
 
-# Exit immediately if a command exits with a non-zero status
-set -e
+# Note: Not using 'set -e' to allow server to start even if migrations/collectstatic fail
+# This helps with debugging when DATABASE_URL is not properly configured
 
 echo "======================================"
 echo "Starting Django Deployment Script"
 echo "======================================"
 
-# Check if DATABASE_URL is set
+# Check if DATABASE_URL is set (warning only, not fatal)
 if [ -z "$DATABASE_URL" ]; then
-    echo "ERROR: DATABASE_URL is not set!"
-    exit 1
-fi
+    echo "⚠️  WARNING: DATABASE_URL is not set!"
+    echo "    Checking for individual database variables..."
 
-echo "✓ DATABASE_URL is configured"
+    if [ -z "$DB_NAME" ] && [ -z "$PGDATABASE" ]; then
+        echo "    No database configuration found."
+        echo "    Migrations may fail, but continuing anyway..."
+    fi
+else
+    echo "✓ DATABASE_URL is configured"
+fi
 
 # Run database migrations
 echo ""
@@ -24,7 +29,8 @@ if [ $? -eq 0 ]; then
     echo "✓ Migrations completed successfully"
 else
     echo "✗ Migration failed!"
-    exit 1
+    echo "⚠️  Continuing anyway - Daphne will start but database may not be ready"
+    echo "    Check Railway logs and ensure PostgreSQL plugin is connected"
 fi
 
 # Collect static files
@@ -36,7 +42,7 @@ if [ $? -eq 0 ]; then
     echo "✓ Static files collected successfully"
 else
     echo "✗ Static file collection failed!"
-    exit 1
+    echo "⚠️  Continuing anyway - Admin panel may not have CSS"
 fi
 
 # Check if PORT is set (Railway provides this)
