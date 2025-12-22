@@ -75,35 +75,45 @@ WSGI_APPLICATION = 'config.wsgi.application'
 ASGI_APPLICATION = 'config.asgi.application'
 
 # Database - PostgreSQL
-# Railway provides DATABASE_URL, use dj_database_url to parse it
-if os.getenv('DATABASE_URL'):
-    DATABASES = {
-        'default': dj_database_url.config(
-            default=os.getenv('DATABASE_URL'),
-            conn_max_age=600,
-            conn_health_checks=True,
-        )
-    }
-elif os.getenv('PGHOST') or os.getenv('pghost'):
-    # Railway PostgreSQL plugin provides these variables (check both upper and lowercase)
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.getenv('PGDATABASE') or os.getenv('pgdatabase') or 'railway',
-            'USER': os.getenv('PGUSER') or os.getenv('pguser') or 'postgres',
-            'PASSWORD': os.getenv('PGPASSWORD') or os.getenv('pgpassword') or '',
-            'HOST': os.getenv('PGHOST') or os.getenv('pghost') or 'postgres.railway.internal',
-            'PORT': os.getenv('PGPORT') or os.getenv('pgport') or '5432',
+# Detect Railway environment and use direct configuration if needed
+RAILWAY_ENVIRONMENT = os.getenv('RAILWAY_ENVIRONMENT')
+
+if RAILWAY_ENVIRONMENT:
+    # Running on Railway - use Railway PostgreSQL service
+    # Try DATABASE_URL first (if manually set)
+    if os.getenv('DATABASE_URL'):
+        DATABASES = {
+            'default': dj_database_url.config(
+                default=os.getenv('DATABASE_URL'),
+                conn_max_age=600,
+                conn_health_checks=True,
+            )
         }
-    }
+    else:
+        # Fallback: Direct Railway PostgreSQL configuration
+        # This bypasses environment variable issues
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': 'railway',
+                'USER': 'postgres',
+                'PASSWORD': os.getenv('PGPASSWORD') or os.getenv('pgpassword') or 'YnJOvfgcUIitgPwGfaBkxplKQQcVXteK',
+                'HOST': os.getenv('PGHOST') or os.getenv('pghost') or 'postgres.railway.internal',
+                'PORT': os.getenv('PGPORT') or os.getenv('pgport') or '5432',
+                'CONN_MAX_AGE': 600,
+                'OPTIONS': {
+                    'connect_timeout': 10,
+                },
+            }
+        }
 else:
-    # Local development fallback
+    # Local development
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
             'NAME': os.getenv('DB_NAME', 'betting_game_db'),
             'USER': os.getenv('DB_USER', 'postgres'),
-            'PASSWORD': os.getenv('DB_PASSWORD', ''),
+            'PASSWORD': os.getenv('DB_PASSWORD', '1234'),
             'HOST': os.getenv('DB_HOST', 'localhost'),
             'PORT': os.getenv('DB_PORT', '5432'),
         }

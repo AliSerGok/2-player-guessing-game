@@ -9,6 +9,12 @@ print("=" * 60)
 print("ENVIRONMENT VARIABLES CHECK")
 print("=" * 60)
 
+# Check Railway environment
+railway_env = os.getenv('RAILWAY_ENVIRONMENT')
+print(f"\nRAILWAY_ENVIRONMENT: {railway_env or 'NOT SET (not on Railway)'}")
+if railway_env:
+    print("  ✅ Running on Railway - will use Railway PostgreSQL config")
+
 # Check DATABASE_URL
 db_url = os.getenv('DATABASE_URL')
 print(f"\nDATABASE_URL: {'SET (hidden)' if db_url else 'NOT SET'}")
@@ -40,25 +46,30 @@ print(f"  POSTGRESS_DB: {os.getenv('POSTGRESS_DB', 'NOT SET')}")
 print(f"  POSTGRESS_USER: {os.getenv('POSTGRESS_USER', 'NOT SET')}")
 print(f"  POSTGRESS_PASSWORD: {'SET (hidden)' if os.getenv('POSTGRESS_PASSWORD') else 'NOT SET'}")
 
-# Check what Django will use
+# Check what Django will use (NEW LOGIC)
 print("\n" + "=" * 60)
 print("DJANGO DATABASE CONFIG (from settings.py logic)")
 print("=" * 60)
 
-if os.getenv('DATABASE_URL'):
-    print("✅ Will use DATABASE_URL")
-elif os.getenv('PGHOST') or os.getenv('pghost'):
-    host = os.getenv('PGHOST') or os.getenv('pghost')
-    db = os.getenv('PGDATABASE') or os.getenv('pgdatabase') or 'railway'
-    user = os.getenv('PGUSER') or os.getenv('pguser') or 'postgres'
-    port = os.getenv('PGPORT') or os.getenv('pgport') or '5432'
-    print(f"✅ Will use individual PG variables")
-    print(f"   Host: {host}")
-    print(f"   Database: {db}")
-    print(f"   User: {user}")
-    print(f"   Port: {port}")
+railway_env = os.getenv('RAILWAY_ENVIRONMENT')
+
+if railway_env:
+    print("🚂 Railway Environment Detected!")
+    if os.getenv('DATABASE_URL'):
+        print("  ✅ Will use DATABASE_URL")
+    else:
+        print("  ✅ Will use DIRECT Railway PostgreSQL config")
+        host = os.getenv('PGHOST') or os.getenv('pghost') or 'postgres.railway.internal'
+        password_source = 'env var' if (os.getenv('PGPASSWORD') or os.getenv('pgpassword')) else 'hardcoded'
+        print(f"     Host: {host}")
+        print(f"     Database: railway")
+        print(f"     User: postgres")
+        print(f"     Password: {password_source}")
+        print(f"     Port: 5432")
 else:
-    print("❌ Will use LOCALHOST (fallback)")
-    print("   This is why you see 127.0.0.1 connection errors!")
+    print("💻 Local Development Mode")
+    print("  Will use localhost configuration")
+    print(f"     Host: localhost")
+    print(f"     Database: {os.getenv('DB_NAME', 'betting_game_db')}")
 
 print("=" * 60)
