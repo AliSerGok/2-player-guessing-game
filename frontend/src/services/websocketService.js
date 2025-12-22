@@ -142,4 +142,6 @@ class WebSocketService {
   }
 }
 
-export default new WebSocketService();
+const websocketServiceInstance = new WebSocketService();
+
+export default websocketServiceInstance;
