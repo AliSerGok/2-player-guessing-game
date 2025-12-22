@@ -84,6 +84,18 @@ if os.getenv('DATABASE_URL'):
             conn_health_checks=True,
         )
     }
+elif os.getenv('PGHOST'):
+    # Railway PostgreSQL plugin provides these variables automatically
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv('PGDATABASE', 'railway'),
+            'USER': os.getenv('PGUSER', 'postgres'),
+            'PASSWORD': os.getenv('PGPASSWORD', ''),
+            'HOST': os.getenv('PGHOST', 'postgres.railway.internal'),
+            'PORT': os.getenv('PGPORT', '5432'),
+        }
+    }
 else:
     # Local development fallback
     DATABASES = {
