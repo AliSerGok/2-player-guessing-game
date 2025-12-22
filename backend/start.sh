@@ -12,11 +12,16 @@ echo ""
 echo "Database Configuration Check:"
 echo "  DATABASE_URL: ${DATABASE_URL:+SET (hidden)}"
 [ -z "$DATABASE_URL" ] && echo "  DATABASE_URL: NOT SET"
-echo "  PGHOST: ${PGHOST:-NOT SET}"
+echo "  PGHOST (uppercase): ${PGHOST:-NOT SET}"
+echo "  pghost (lowercase): ${pghost:-NOT SET}"
 echo "  PGDATABASE: ${PGDATABASE:-NOT SET}"
+echo "  pgdatabase: ${pgdatabase:-NOT SET}"
 echo "  PGUSER: ${PGUSER:-NOT SET}"
+echo "  pguser: ${pguser:-NOT SET}"
 echo "  PGPASSWORD: ${PGPASSWORD:+SET (hidden)}"
 [ -z "$PGPASSWORD" ] && echo "  PGPASSWORD: NOT SET"
+echo "  pgpassword: ${pgpassword:+SET (hidden)}"
+[ -z "$pgpassword" ] && echo "  pgpassword: NOT SET"
 echo ""
 
 # Check if DATABASE_URL is set (warning only, not fatal)
@@ -24,11 +29,11 @@ if [ -z "$DATABASE_URL" ]; then
     echo "⚠️  WARNING: DATABASE_URL is not set!"
     echo "    Checking for individual database variables..."
 
-    if [ -z "$PGHOST" ] && [ -z "$DB_NAME" ]; then
+    if [ -z "$PGHOST" ] && [ -z "$pghost" ] && [ -z "$DB_NAME" ]; then
         echo "    ❌ No database configuration found!"
         echo "    Please add PostgreSQL variables to Railway backend service"
     else
-        echo "    ✓ Found database variables"
+        echo "    ✓ Found PostgreSQL variables (checking both uppercase and lowercase)"
     fi
 else
     echo "✓ DATABASE_URL is configured"
