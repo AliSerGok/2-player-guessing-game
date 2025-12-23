@@ -78,23 +78,6 @@ const Transactions = () => {
     return tx.type === filter;
   });
 
-  const getBalance = () => {
-    let balance = 0;
-    const sortedTx = [...transactions].sort(
-      (a, b) => new Date(a.created_at) - new Date(b.created_at)
-    );
-
-    sortedTx.forEach((tx) => {
-      if (tx.type === 'deposit' || tx.type === 'win' || tx.type === 'refund') {
-        balance += parseFloat(tx.amount);
-      } else if (tx.type === 'withdraw' || tx.type === 'bet') {
-        balance -= parseFloat(tx.amount);
-      }
-    });
-
-    return balance;
-  };
-
   const getStats = () => {
     const deposits = transactions
       .filter((tx) => tx.type === 'deposit')
