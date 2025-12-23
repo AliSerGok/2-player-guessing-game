@@ -198,3 +198,58 @@ class WithdrawView(APIView):
             'transaction': TransactionSerializer(transaction_record).data,
             'new_balance': user.balance
         }, status=status.HTTP_200_OK)
+
+
+# Admin-only permission class
+class IsAdminUser(IsAuthenticated):
+    def has_permission(self, request, view):
+        if not super().has_permission(request, view):
+            return False
+        return request.user.role == 'admin'
+
+
+# Admin views
+class AdminUsersListView(generics.ListAPIView):
+    permission_classes = (IsAdminUser,)
+    serializer_class = UserSerializer
+    queryset = User.objects.all().order_by('-date_joined')
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        # Filter by search query
+        search = self.request.query_params.get('search', None)
+        if search:
+            queryset = queryset.filter(email__icontains=search)
+
+        # Filter by role
+        role = self.request.query_params.get('role', None)
+        if role:
+            queryset = queryset.filter(role=role)
+
+        return queryset
+
+
+class AdminUserDetailView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsAdminUser,)
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+
+
+class AdminTransactionsListView(generics.ListAPIView):
+    permission_classes = (IsAdminUser,)
+    serializer_class = TransactionSerializer
+    queryset = Transaction.objects.all().order_by('-created_at')
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        # Filter by user
+        user_id = self.request.query_params.get('user_id', None)
+        if user_id:
+            queryset = queryset.filter(user_id=user_id)
+
+        # Filter by type
+        transaction_type = self.request.query_params.get('type', None)
+        if transaction_type:
+            queryset = queryset.filter(type=transaction_type)
+
+        return queryset

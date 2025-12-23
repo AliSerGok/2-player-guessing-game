@@ -37,6 +37,18 @@ else
     echo "⚠️  Continuing anyway - Admin panel may not have CSS"
 fi
 
+# Create admin user if it doesn't exist
+echo ""
+echo "Creating admin user if it doesn't exist..."
+python manage.py create_admin
+
+if [ $? -eq 0 ]; then
+    echo "✓ Admin user check completed"
+else
+    echo "✗ Admin user creation failed (or already exists)"
+    echo "⚠️  Continuing anyway"
+fi
+
 # Check if PORT is set (Railway provides this)
 if [ -z "$PORT" ]; then
     echo "WARNING: PORT not set, using default 8000"

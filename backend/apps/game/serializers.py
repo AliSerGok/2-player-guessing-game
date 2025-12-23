@@ -128,3 +128,32 @@ class MakeGuessSerializer(serializers.Serializer):
         if value < 1 or value > 100:
             raise serializers.ValidationError("Guess must be between 1 and 100")
         return value
+
+
+class BetSettingsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BetSettings
+        fields = ('id', 'min_bet', 'max_bet', 'step')
+        read_only_fields = ('id',)
+
+    def validate(self, attrs):
+        min_bet = attrs.get('min_bet', getattr(self.instance, 'min_bet', None))
+        max_bet = attrs.get('max_bet', getattr(self.instance, 'max_bet', None))
+        step = attrs.get('step', getattr(self.instance, 'step', None))
+
+        if min_bet and max_bet and min_bet >= max_bet:
+            raise serializers.ValidationError({
+                'min_bet': 'Minimum bet must be less than maximum bet'
+            })
+
+        if min_bet and min_bet <= 0:
+            raise serializers.ValidationError({
+                'min_bet': 'Minimum bet must be greater than 0'
+            })
+
+        if step and step < 0:
+            raise serializers.ValidationError({
+                'step': 'Step must be non-negative'
+            })
+
+        return attrs

@@ -28,6 +28,11 @@ const Header = () => {
                   Balance: <strong>{parseFloat(user.balance).toFixed(2)} Gold</strong>
                 </span>
               </div>
+              {user.role === 'admin' && (
+                <button onClick={() => navigate('/admin')} className="btn-admin">
+                  Admin Panel
+                </button>
+              )}
               <button onClick={handleLogout} className="btn-logout">
                 Logout
               </button>

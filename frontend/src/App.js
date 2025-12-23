@@ -5,6 +5,7 @@ import Login from './components/Login';
 import Signup from './components/Signup';
 import Dashboard from './components/Dashboard';
 import Game from './components/Game';
+import AdminPanel from './components/AdminPanel';
 import PrivateRoute from './components/PrivateRoute';
 import './App.css';
 
@@ -30,6 +31,14 @@ function App() {
               element={
                 <PrivateRoute>
                   <Game />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/admin"
+              element={
+                <PrivateRoute>
+                  <AdminPanel />
                 </PrivateRoute>
               }
             />

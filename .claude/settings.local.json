@@ -6,7 +6,9 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(cat:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Read(//c/Users/agok/Desktop/**)",
+      "Bash(python manage.py shell:*)"
     ],
     "deny": [],
     "ask": []

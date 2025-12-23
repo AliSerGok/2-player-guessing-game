@@ -1,16 +1,22 @@
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, BasePermission
 from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
-from .models import Room, Game, Guess
+from .models import Room, Game, Guess, BetSettings
 from .serializers import (
     RoomSerializer, CreateRoomSerializer,
-    GameSerializer, GuessSerializer, MakeGuessSerializer
+    GameSerializer, GuessSerializer, MakeGuessSerializer, BetSettingsSerializer
 )
 from .services import GameService
+
+
+# Admin permission class
+class IsAdminUser(BasePermission):
+    def has_permission(self, request, view):
+        return request.user and request.user.is_authenticated and request.user.role == 'admin'
 
 
 class RoomListView(generics.ListAPIView):
@@ -215,3 +221,61 @@ class MyGamesView(generics.ListAPIView):
         return Game.objects.filter(
             Q(room__player1=user) | Q(room__player2=user)
         )
+
+
+# Admin Views
+class AdminRoomsListView(generics.ListAPIView):
+    """Admin: List all rooms with filters"""
+    permission_classes = (IsAdminUser,)
+    serializer_class = RoomSerializer
+    queryset = Room.objects.all().order_by('-created_at')
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        # Filter by status
+        status_filter = self.request.query_params.get('status', None)
+        if status_filter:
+            queryset = queryset.filter(status=status_filter)
+        return queryset
+
+
+class AdminGamesListView(generics.ListAPIView):
+    """Admin: List all games with filters"""
+    permission_classes = (IsAdminUser,)
+    serializer_class = GameSerializer
+    queryset = Game.objects.all().order_by('-started_at')
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        # Filter by status
+        status_filter = self.request.query_params.get('status', None)
+        if status_filter:
+            queryset = queryset.filter(status=status_filter)
+        return queryset
+
+
+class BetSettingsView(APIView):
+    """Get and update bet settings"""
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        """Anyone can view bet settings"""
+        settings = BetSettings.get_settings()
+        return Response(BetSettingsSerializer(settings).data, status=status.HTTP_200_OK)
+
+    def put(self, request):
+        """Only admin can update bet settings"""
+        if request.user.role != 'admin':
+            return Response({
+                'error': 'Admin access required'
+            }, status=status.HTTP_403_FORBIDDEN)
+
+        settings = BetSettings.get_settings()
+        serializer = BetSettingsSerializer(settings, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response({
+            'message': 'Bet settings updated successfully',
+            'settings': serializer.data
+        }, status=status.HTTP_200_OK)

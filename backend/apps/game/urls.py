@@ -2,7 +2,8 @@ from django.urls import path
 from .views import (
     RoomListView, CreateRoomView, RoomDetailView,
     JoinRoomView, MyRoomsView,
-    StartGameView, GameDetailView, MakeGuessView, MyGamesView
+    StartGameView, GameDetailView, MakeGuessView, MyGamesView,
+    AdminRoomsListView, AdminGamesListView, BetSettingsView
 )
 
 app_name = 'game'
@@ -20,4 +21,11 @@ urlpatterns = [
     path('games/my/', MyGamesView.as_view(), name='my_games'),
     path('games/<int:pk>/', GameDetailView.as_view(), name='game_detail'),
     path('games/<int:pk>/guess/', MakeGuessView.as_view(), name='make_guess'),
+
+    # Bet settings
+    path('bet-settings/', BetSettingsView.as_view(), name='bet_settings'),
+
+    # Admin endpoints
+    path('admin/rooms/', AdminRoomsListView.as_view(), name='admin_rooms_list'),
+    path('admin/games/', AdminGamesListView.as_view(), name='admin_games_list'),
 ]

@@ -29,7 +29,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     const data = await authService.login(email, password);
     setUser(data.user);
-    return data;
+    return data.user;
   };
 
   const register = async (email, password, age) => {
