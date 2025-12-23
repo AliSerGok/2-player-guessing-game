@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import adminService from '../services/adminService';
@@ -44,12 +44,7 @@ const AdminPanel = () => {
     }
   }, [user, navigate]);
 
-  // Load data based on active tab
-  useEffect(() => {
-    loadTabData();
-  }, [activeTab, searchEmail, roleFilter, transactionTypeFilter, roomStatusFilter, gameStatusFilter]);
-
-  const loadTabData = async () => {
+  const loadTabData = useCallback(async () => {
     setLoading(true);
     try {
       if (activeTab === 'users') {
@@ -88,7 +83,12 @@ const AdminPanel = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [activeTab, searchEmail, roleFilter, transactionTypeFilter, roomStatusFilter, gameStatusFilter]);
+
+  // Load data based on active tab
+  useEffect(() => {
+    loadTabData();
+  }, [loadTabData]);
 
   const handleLogout = () => {
     logout();
