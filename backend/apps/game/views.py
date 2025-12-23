@@ -291,20 +291,23 @@ class LeaderboardView(APIView):
 
         User = get_user_model()
 
-        # Get all players with their win count
+        # Get all players with their win count and total games
+        # Count games where user is player1 or player2
         players = User.objects.filter(role='player').annotate(
-            total_games=Count('game_winner', distinct=True),
-            wins=Count('game_winner', filter=Q(game_winner__status='COMPLETED'), distinct=True)
+            wins=Count('won_games', filter=Q(won_games__status='COMPLETED'), distinct=True),
+            games_as_p1=Count('rooms_as_player1__game', filter=Q(rooms_as_player1__game__status='COMPLETED'), distinct=True),
+            games_as_p2=Count('rooms_as_player2__game', filter=Q(rooms_as_player2__game__status='COMPLETED'), distinct=True)
         ).order_by('-wins', '-balance')[:50]  # Top 50 players
 
         leaderboard_data = []
         for idx, player in enumerate(players, 1):
+            total_games = player.games_as_p1 + player.games_as_p2
             leaderboard_data.append({
                 'rank': idx,
                 'id': player.id,
                 'email': player.email,
                 'balance': float(player.balance),
-                'total_games': player.total_games,
+                'total_games': total_games,
                 'wins': player.wins,
             })
 
