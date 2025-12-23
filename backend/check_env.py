@@ -9,6 +9,35 @@ print("=" * 60)
 print("ENVIRONMENT VARIABLES CHECK")
 print("=" * 60)
 
+# Check CORS configuration
+print("\n🌐 CORS Configuration:")
+cors_origins = os.getenv('CORS_ALLOWED_ORIGINS', 'NOT SET')
+if cors_origins != 'NOT SET':
+    origins_list = cors_origins.split(',')
+    print(f"  CORS_ALLOWED_ORIGINS ({len(origins_list)} origins):")
+    for idx, origin in enumerate(origins_list, 1):
+        print(f"    {idx}. '{origin}' (length: {len(origin)})")
+        if origin.endswith('/'):
+            print(f"       ⚠️  WARNING: Has trailing slash!")
+else:
+    print(f"  CORS_ALLOWED_ORIGINS: {cors_origins}")
+
+csrf_origins = os.getenv('CSRF_TRUSTED_ORIGINS', 'NOT SET')
+if csrf_origins != 'NOT SET':
+    origins_list = csrf_origins.split(',')
+    print(f"  CSRF_TRUSTED_ORIGINS ({len(origins_list)} origins):")
+    for idx, origin in enumerate(origins_list, 1):
+        print(f"    {idx}. '{origin}' (length: {len(origin)})")
+        if origin.endswith('/'):
+            print(f"       ⚠️  WARNING: Has trailing slash!")
+else:
+    print(f"  CSRF_TRUSTED_ORIGINS: {csrf_origins}")
+
+allowed_hosts = os.getenv('ALLOWED_HOSTS', 'NOT SET')
+print(f"  ALLOWED_HOSTS: {allowed_hosts}")
+
+print("=" * 60)
+
 # Check Railway environment
 railway_env = os.getenv('RAILWAY_ENVIRONMENT')
 print(f"\nRAILWAY_ENVIRONMENT: {railway_env or 'NOT SET (not on Railway)'}")
