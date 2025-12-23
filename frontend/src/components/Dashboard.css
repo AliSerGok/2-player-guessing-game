@@ -33,11 +33,16 @@
   font-size: 24px;
 }
 
-.btn-create-room {
+.action-buttons {
+  display: flex;
+  gap: 1rem;
   margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.btn-create-room,
+.btn-nav {
   padding: 12px 24px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
   border: none;
   border-radius: 6px;
   font-size: 16px;
@@ -46,7 +51,24 @@
   transition: transform 0.2s;
 }
 
+.btn-create-room {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
 .btn-create-room:hover {
+  transform: translateY(-2px);
+}
+
+.btn-nav {
+  background: white;
+  color: #667eea;
+  border: 2px solid #667eea;
+}
+
+.btn-nav:hover {
+  background: #667eea;
+  color: white;
   transform: translateY(-2px);
 }
 

@@ -279,3 +279,33 @@ class BetSettingsView(APIView):
             'message': 'Bet settings updated successfully',
             'settings': serializer.data
         }, status=status.HTTP_200_OK)
+
+
+class LeaderboardView(APIView):
+    """Get leaderboard - top players by wins and balance"""
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        from django.contrib.auth import get_user_model
+        from django.db.models import Count, Q
+
+        User = get_user_model()
+
+        # Get all players with their win count
+        players = User.objects.filter(role='player').annotate(
+            total_games=Count('game_winner', distinct=True),
+            wins=Count('game_winner', filter=Q(game_winner__status='COMPLETED'), distinct=True)
+        ).order_by('-wins', '-balance')[:50]  # Top 50 players
+
+        leaderboard_data = []
+        for idx, player in enumerate(players, 1):
+            leaderboard_data.append({
+                'rank': idx,
+                'id': player.id,
+                'email': player.email,
+                'balance': float(player.balance),
+                'total_games': player.total_games,
+                'wins': player.wins,
+            })
+
+        return Response(leaderboard_data, status=status.HTTP_200_OK)

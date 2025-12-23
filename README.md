@@ -220,13 +220,9 @@ Bu case study kapsamında aşağıdaki özellikler **bilinçli olarak** implemen
 
 1. **E-posta Doğrulama**: Case study dökümanında "mock kabul edilir" dendiği için gerçek email gönderimi ve doğrulama sistemi yapılmadı. Kullanıcı kayıt olduktan sonra direkt giriş yapabilir.
 
-2. **Leaderboard/Sıralama Sistemi**: Case study gereksinimlerinde "Kullanıcı Tarafı Ekranlar" bölümünde leaderboard bahsedilmiş ancak zorunlu değil. Oyun geçmişi admin panelinde görülebilir ama public leaderboard yok.
+2. **Oyuncu Bağlantı Kopması Senaryosu**: Case study'de "Oyuncu bağlantısı koparsa basit bir senaryo ele alınmalıdır" denmiş. Şu anda bağlantı kopması durumunda oyun devam eder ama kopan oyuncu manuel refresh yapana kadar oyuna dönemez. Otomatik reconnection veya timeout mekanizması yok.
 
-3. **Hesap Hareketleri Kullanıcı Ekranı**: Case study'de kullanıcı tarafı ekranlar arasında "Hesap hareketleri" sayılmış. Backend API mevcut ancak frontend'de kullanıcılar için ayrı bir sayfa yapılmadı. Admin panelinde tüm transaction'lar görülebilir.
-
-4. **Oyuncu Bağlantı Kopması Senaryosu**: Case study'de "Oyuncu bağlantısı koparsa basit bir senaryo ele alınmalıdır" denmiş. Şu anda bağlantı kopması durumunda oyun devam eder ama kopan oyuncu manuel refresh yapana kadar oyuna dönemez. Otomatik reconnection veya timeout mekanizması yok.
-
-5. **Profil Sayfası**: Case study "Kullanıcı Tarafı Ekranlar" arasında "Profil ve bakiye görüntüleme" istiyor. Bakiye header'da gösteriliyor ancak ayrı bir profil sayfası yok.
+3. **Profil Sayfası**: Case study "Kullanıcı Tarafı Ekranlar" arasında "Profil ve bakiye görüntüleme" istiyor. Bakiye header'da gösteriliyor ancak ayrı bir profil sayfası yok.
 
 ---
 

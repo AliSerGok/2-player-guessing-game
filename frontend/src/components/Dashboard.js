@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import Header from './Header';
 import RoomList from './RoomList';
@@ -7,6 +8,7 @@ import './Dashboard.css';
 
 const Dashboard = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
 
@@ -28,9 +30,18 @@ const Dashboard = () => {
         <div className="welcome-section">
           <h2>Welcome, {user?.email}!</h2>
           <p>Your current balance: <strong>{parseFloat(user?.balance || 0).toFixed(2)} Gold</strong></p>
-          <button className="btn-create-room" onClick={() => setIsCreateModalOpen(true)}>
-            Create New Room
-          </button>
+
+          <div className="action-buttons">
+            <button className="btn-create-room" onClick={() => setIsCreateModalOpen(true)}>
+              Create New Room
+            </button>
+            <button className="btn-nav" onClick={() => navigate('/leaderboard')}>
+              🏆 Leaderboard
+            </button>
+            <button className="btn-nav" onClick={() => navigate('/transactions')}>
+              💳 My Transactions
+            </button>
+          </div>
         </div>
 
         {successMessage && (

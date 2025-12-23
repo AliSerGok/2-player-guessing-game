@@ -6,6 +6,8 @@ import Signup from './components/Signup';
 import Dashboard from './components/Dashboard';
 import Game from './components/Game';
 import AdminPanel from './components/AdminPanel';
+import Leaderboard from './components/Leaderboard';
+import Transactions from './components/Transactions';
 import PrivateRoute from './components/PrivateRoute';
 import './App.css';
 
@@ -31,6 +33,22 @@ function App() {
               element={
                 <PrivateRoute>
                   <Game />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/leaderboard"
+              element={
+                <PrivateRoute>
+                  <Leaderboard />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/transactions"
+              element={
+                <PrivateRoute>
+                  <Transactions />
                 </PrivateRoute>
               }
             />

@@ -3,7 +3,7 @@ from .views import (
     RoomListView, CreateRoomView, RoomDetailView,
     JoinRoomView, MyRoomsView,
     StartGameView, GameDetailView, MakeGuessView, MyGamesView,
-    AdminRoomsListView, AdminGamesListView, BetSettingsView
+    AdminRoomsListView, AdminGamesListView, BetSettingsView, LeaderboardView
 )
 
 app_name = 'game'
@@ -24,6 +24,9 @@ urlpatterns = [
 
     # Bet settings
     path('bet-settings/', BetSettingsView.as_view(), name='bet_settings'),
+
+    # Leaderboard
+    path('leaderboard/', LeaderboardView.as_view(), name='leaderboard'),
 
     # Admin endpoints
     path('admin/rooms/', AdminRoomsListView.as_view(), name='admin_rooms_list'),
