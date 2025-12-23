@@ -1,36 +1,50 @@
 # 2-Player Betting Guessing Game
 
-React + Django tabanlı iki oyunculu, gerçek zamanlı sayı tahmin oyunu platformu.
+A real-time, two-player number guessing game platform built with React and Django.
 
-**Canlı Demo:**
-- Frontend: https://splendid-youth-production-f3f7.up.railway.app
-- Backend API: https://2-player-guessing-game-production.up.railway.app
+## Live Demo
 
-## Kurulum
+**Production Links:**
+- **Frontend**: https://splendid-youth-production-f3f7.up.railway.app
+- **Backend API**: https://2-player-guessing-game-production.up.railway.app
 
-### Gereksinimler
+**Test Accounts:**
+
+**Regular User (Player):**
+- Create a new account at `/signup`
+- Automatically receives 1000 Gold starting balance
+
+**Admin Panel:**
+- **URL**: https://splendid-youth-production-f3f7.up.railway.app/admin
+- **Email**: `admin@gmail.com`
+- **Password**: `adminadmin`
+- **Permissions**: View and manage all users, games, and transactions
+
+## Installation
+
+### Requirements
 - Python 3.11+
 - Node.js 20+
 - PostgreSQL 12+
 - Redis 6+
 
-### Backend Kurulumu
+### Backend Setup
 
 ```bash
-# PostgreSQL veritabanı oluştur
+# Create PostgreSQL database
 createdb betting_game_db
 
-# Backend klasörüne git
+# Navigate to backend directory
 cd backend
 
-# Virtual environment oluştur ve aktifleştir
+# Create and activate virtual environment
 python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
 
-# Bağımlılıkları yükle
+# Install dependencies
 pip install -r requirements.txt
 
-# .env dosyası oluştur
+# Create .env file
 cat > .env << EOF
 DEBUG=True
 SECRET_KEY=your-secret-key-here
@@ -40,51 +54,58 @@ ALLOWED_HOSTS=localhost,127.0.0.1
 CORS_ALLOWED_ORIGINS=http://localhost:3000
 EOF
 
-# Database migration
+# Run database migrations
 python manage.py migrate
 
-# Admin kullanıcısı oluştur (otomatik)
+# Create admin user (automatic)
 python manage.py create_admin
 # Email: admin@gmail.com
 # Password: adminadmin
 
-# Redis başlat (yeni terminal penceresi)
+# Start Redis (new terminal window)
 redis-server
 
-# Django server başlat
+# Start Django server
 python manage.py runserver
 ```
 
-### Frontend Kurulumu
+### Frontend Setup
 
 ```bash
-# Frontend klasörüne git
+# Navigate to frontend directory
 cd frontend
 
-# Bağımlılıkları yükle
+# Install dependencies
 npm install
 
-# .env dosyası oluştur
+# Create .env file
 cat > .env << EOF
 REACT_APP_API_URL=http://localhost:8000
 REACT_APP_WS_URL=ws://localhost:8000
 EOF
 
-# Development server başlat
+# Start development server
 npm start
 ```
 
-### Erişim
+### Access
 
-- Frontend: http://localhost:3000
-- Backend API: http://localhost:8000
-- Admin Panel: http://localhost:3000/admin (email: admin@gmail.com, password: adminadmin)
+**Local Development:**
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:8000
+- **Admin Panel**: http://localhost:3000/admin
 
-## Mimari Yaklaşım
+**Admin Login:**
+- **Email**: `admin@gmail.com`
+- **Password**: `adminadmin`
 
-### Genel Mimari
+**Note**: Admin user is automatically created by running `python manage.py create_admin`.
 
-Proje, frontend ve backend'in tamamen ayrıldığı **client-server** mimarisini kullanır:
+## Architecture
+
+### Overall Architecture
+
+The project uses a **client-server** architecture with completely separated frontend and backend:
 
 ```
 ┌─────────────┐         HTTP/REST          ┌─────────────┐
@@ -104,44 +125,44 @@ Proje, frontend ve backend'in tamamen ayrıldığı **client-server** mimarisini
 
 ### Backend (Django)
 
-**Modüler Yapı:**
-- `apps/users/`: Kullanıcı yönetimi, authentication, wallet ve transaction işlemleri
-- `apps/game/`: Oyun mantığı, oda yönetimi, bahis sistemi, WebSocket consumers
+**Modular Structure:**
+- `apps/users/`: User management, authentication, wallet, and transaction operations
+- `apps/game/`: Game logic, room management, betting system, WebSocket consumers
 
-**Katmanlı Mimari:**
-- **Models** (`models.py`): Database schema ve ORM modelleri
-- **Serializers** (`serializers.py`): API input/output validation ve serialization
+**Layered Architecture:**
+- **Models** (`models.py`): Database schema and ORM models
+- **Serializers** (`serializers.py`): API input/output validation and serialization
 - **Views** (`views.py`): REST API endpoints (DRF ViewSets)
-- **Services** (`services.py`): Business logic ve oyun kuralları
+- **Services** (`services.py`): Business logic and game rules
 - **Consumers** (`consumers.py`): WebSocket event handling
 
-**Teknoloji Seçimleri:**
-- **Django Channels**: WebSocket desteği için ASGI uygulaması
-- **Redis**: WebSocket message broadcasting için channel layer
-- **PostgreSQL**: ACID transaction desteği, row-level locking
-- **JWT**: Stateless authentication (REST API ve WebSocket için)
+**Technology Choices:**
+- **Django Channels**: ASGI application for WebSocket support
+- **Redis**: Channel layer for WebSocket message broadcasting
+- **PostgreSQL**: ACID transaction support, row-level locking
+- **JWT**: Stateless authentication (for REST API and WebSocket)
 
 ### Frontend (React)
 
-**Component-Based Yapı:**
-- `components/`: Yeniden kullanılabilir UI bileşenleri
+**Component-Based Structure:**
+- `components/`: Reusable UI components
 - `contexts/`: Global state management (AuthContext)
-- `services/`: API ve WebSocket iletişim katmanı
+- `services/`: API and WebSocket communication layer
 
 **State Management:**
 - **Context API**: Global authentication state
 - **Local State**: Component-level state (useState/useEffect hooks)
-- **WebSocket Service**: Singleton pattern ile WebSocket connection yönetimi
+- **WebSocket Service**: Singleton pattern for WebSocket connection management
 
-### Gerçek Zamanlı İletişim
+### Real-Time Communication
 
-**WebSocket Mimarisi:**
-- Django Channels ile ASGI-based WebSocket server
-- Redis channel layer ile message broadcasting (pub/sub pattern)
-- JWT authentication WebSocket bağlantısında query parameter üzerinden
-- Event-driven architecture: Frontend event listener pattern kullanır
+**WebSocket Architecture:**
+- ASGI-based WebSocket server with Django Channels
+- Message broadcasting via Redis channel layer (pub/sub pattern)
+- JWT authentication via query parameter in WebSocket connection
+- Event-driven architecture: Frontend uses event listener pattern
 
-**Oyun Akışı:**
+**Game Flow:**
 ```
 Player1 & Player2 → WebSocket Connect → JWT Auth
                          ↓
@@ -149,36 +170,36 @@ Player1 & Player2 → WebSocket Connect → JWT Auth
                          ↓
               GameService.start_game()
                          ↓
-        Secret number üret, coin toss, balance düş
+        Generate secret number, coin toss, deduct balance
                          ↓
-          GAME_START broadcast (her iki oyuncuya)
+          GAME_START broadcast (to both players)
                          ↓
         Player → MAKE_GUESS → GameService.make_guess()
                          ↓
-            Feedback üret (UP/DOWN/CORRECT)
+            Generate feedback (UP/DOWN/CORRECT)
                          ↓
-         TURN_UPDATE veya GAME_END broadcast
+         TURN_UPDATE or GAME_END broadcast
 ```
 
-### Güvenlik ve Veri Tutarlılığı
+### Security and Data Consistency
 
-**Race Condition Önleme:**
+**Race Condition Prevention:**
 - `select_for_update()`: Database-level row locking
-- `F()` expressions: Atomic balance güncellemeleri
-- `transaction.atomic()`: ACID transaction garantisi
+- `F()` expressions: Atomic balance updates
+- `transaction.atomic()`: ACID transaction guarantee
 
 **Authentication:**
 - JWT tokens (access + refresh)
-- HTTP-only token storage (localStorage)
+- Token storage in localStorage
 - WebSocket authentication via query string
 
 **CORS:**
-- Sadece izin verilen origin'lerden istek kabul edilir
+- Only accepts requests from allowed origins
 - Credentials support (cookies/authorization headers)
 
 ### Database Design
 
-**İlişkisel Model:**
+**Relational Model:**
 - User → Transaction (1:N)
 - User → Room (creator, player1, player2)
 - Room → Game (1:1)
@@ -186,44 +207,135 @@ Player1 & Player2 → WebSocket Connect → JWT Auth
 - Game → User (current_turn, winner)
 
 **Transaction History:**
-Tüm balance değişiklikleri `Transaction` tablosunda loglanır (audit trail).
+All balance changes are logged in the `Transaction` table (audit trail).
 
-## Varsayımlar
+## Features
 
-1. **Sanal Para Sistemi**: Gerçek para değil, "Gold" adlı sanal birim kullanılır. Başlangıç bakiyesi 1000 Gold.
+### User Features
 
-2. **İki Oyunculu Mantık**: Her oda tam olarak 2 oyuncu alır. 1v1 oyun mantığı vardır.
+#### Dashboard
+- Welcome message and balance display
+- "Create New Room" button to create a new room
+- "Leaderboard" button to access rankings
+- "My Transactions" button to access transaction history
+- List of open rooms (with Join buttons)
 
-3. **Tek Oyun Per Room**: Her room'da sadece 1 oyun oynanır. Oyun bittikten sonra room COMPLETED durumuna geçer ve tekrar kullanılamaz.
+#### Leaderboard
+- Top 50 player rankings
+- Medal system for top 3 (gold, silver, bronze)
+- Displayed information:
+  - Rank
+  - Player email
+  - Wins count
+  - Total games count
+  - Win rate percentage
+  - Balance
+- Ranking criteria: First by wins count, then by balance
 
-4. **Kazanan Hepsini Alır**: Kazanan oyuncu her iki oyuncunun bahis tutarını alır (2x bet). Kaybeden hiçbir şey kazanamaz.
+#### Transactions
+- **4 Statistics Cards**:
+  - Total Deposits
+  - Total Withdraws
+  - Total Bets
+  - Total Wins
+- **Transaction List**:
+  - Complete transaction history (deposit, withdraw, bet, win, refund)
+  - Icon and color coding for each transaction type
+  - Date and time information
+  - Positive/Negative amount display
+- **Filter System**:
+  - All
+  - Deposits
+  - Withdraws
+  - Bets
+  - Wins
 
-5. **Sıralı Tahmin**: Oyuncular aynı anda tahmin yapamaz, sıra sistemi vardır. Her tahmin sonrası sıra otomatik olarak karşı oyuncuya geçer.
+#### Game Screen
+- Real-time WebSocket connection
+- Game status display (Waiting, In Progress, Completed)
+- Turn information (Your Turn / Opponent's Turn)
+- Guess input field (1-100 range)
+- Guess history (all guesses and feedback)
+- Game result screen (winner, loser, round count)
 
-6. **Email-Based Authentication**: Username yerine email adresi ile kimlik doğrulama yapılır.
+### Admin Features
 
-7. **Yaş Kontrolü**: Sisteme kayıt için minimum 18 yaş şartı vardır. Yaş bilgisi kayıt sırasında alınır (email doğrulama yapılmaz, kullanıcı beyanı kabul edilir).
+#### Admin Panel (Custom React Page)
 
-8. **Bahis Tutarı Sabit**: Oda oluşturulurken belirlenen bahis tutarı oyun boyunca değiştirilemez.
+**5 Tab System:**
 
-9. **Balance Kontrolü**: Kullanıcı yeni oda oluştururken veya mevcut odaya katılırken bakiyesinin bahis tutarına yetmesi kontrol edilir.
+1. **Users**
+   - All users list
+   - Email search
+   - Role filtering (player/admin)
+   - User information: ID, Email, Role, Age, Balance, Join Date
 
-10. **Otomatik Oyun Başlatma**: İki oyuncu da odaya katıldığında ve WebSocket'e bağlandığında oyun otomatik olarak başlar (manuel "start" butonuna gerek yoktur).
+2. **Transactions**
+   - All transaction history (system-wide)
+   - Type filtering (deposit, withdraw, bet, win, refund)
+   - Transaction details: ID, User, Type, Amount, Date
 
-11. **Secret Number Range**: Tahmin edilecek gizli sayı her zaman 1-100 arası (inclusive) bir tam sayıdır.
+3. **Rooms**
+   - All rooms list
+   - Status filtering (OPEN, FULL, COMPLETED)
+   - Room information: ID, Bet Amount, Status, Creator, Players, Date
 
-12. **Coin Toss**: Oyun başlangıcında ilk sıra random coin toss ile belirlenir (adil dağılım).
+4. **Games**
+   - All games list
+   - Status filtering (IN_PROGRESS, COMPLETED)
+   - Game information: ID, Room, Status, Players, Winner, Bet Amount, Guesses, Date
 
-## Bilerek Yapılmayanlar
+5. **Bet Settings**
+   - Minimum Bet (Min Gold)
+   - Maximum Bet (Max Gold)
+   - Step Increment
+   - Update form
+   - Current settings display
 
-Bu case study kapsamında aşağıdaki özellikler **bilinçli olarak** implement edilmemiştir:
+**Admin Features:**
+- Only accessible by users with `role='admin'`
+- Automatically redirected to `/admin` page upon login
+- "Admin Panel" button visible in header
+- Modern, responsive UI
+- Real-time data loading
+- Beautiful table design
 
-1. **E-posta Doğrulama**: Case study dökümanında "mock kabul edilir" dendiği için gerçek email gönderimi ve doğrulama sistemi yapılmadı. Kullanıcı kayıt olduktan sonra direkt giriş yapabilir.
+## Assumptions
 
-2. **Oyuncu Bağlantı Kopması Senaryosu**: Case study'de "Oyuncu bağlantısı koparsa basit bir senaryo ele alınmalıdır" denmiş. Şu anda bağlantı kopması durumunda oyun devam eder ama kopan oyuncu manuel refresh yapana kadar oyuna dönemez. Otomatik reconnection veya timeout mekanizması yok.
+1. **Virtual Currency System**: Uses virtual currency called "Gold", not real money. Starting balance is 1000 Gold.
 
-3. **Profil Sayfası**: Case study "Kullanıcı Tarafı Ekranlar" arasında "Profil ve bakiye görüntüleme" istiyor. Bakiye header'da gösteriliyor ancak ayrı bir profil sayfası yok.
+2. **Two-Player Logic**: Each room accepts exactly 2 players. 1v1 game logic.
+
+3. **Single Game Per Room**: Only 1 game is played per room. After the game ends, the room status changes to COMPLETED and cannot be reused.
+
+4. **Winner Takes All**: The winning player receives both players' bet amounts (2x bet). The loser receives nothing.
+
+5. **Turn-Based Guessing**: Players cannot guess simultaneously; there is a turn system. After each guess, the turn automatically passes to the other player.
+
+6. **Email-Based Authentication**: Authentication is done via email address instead of username.
+
+7. **Age Verification**: Minimum age requirement of 18 to register. Age information is taken during registration (no email verification, user declaration is accepted).
+
+8. **Fixed Bet Amount**: The bet amount determined when creating a room cannot be changed during the game.
+
+9. **Balance Check**: When a user creates a new room or joins an existing room, their balance is checked to ensure it meets the bet amount.
+
+10. **Automatic Game Start**: When both players join the room and connect to WebSocket, the game starts automatically (no manual "start" button required).
+
+11. **Secret Number Range**: The secret number to be guessed is always an integer between 1-100 (inclusive).
+
+12. **Coin Toss**: The first turn at the start of the game is determined by a random coin toss (fair distribution).
+
+## Deliberately Not Implemented
+
+The following features were **deliberately** not implemented within the scope of this case study:
+
+1. **Email Verification**: Since the case study document states "mock is acceptable," real email sending and verification system was not implemented. Users can log in directly after registration.
+
+2. **Player Disconnection Scenario**: The case study mentions "a simple scenario should be handled if a player's connection drops." Currently, if the connection drops, the game continues but the disconnected player cannot return to the game until they manually refresh. No automatic reconnection or timeout mechanism.
+
+3. **Profile Page**: The case study requests "profile and balance viewing" in the user-side screens. Balance is shown in the header, but there is no separate profile page.
 
 ---
 
-**Not:** Proje detaylı teknik dokümantasyon için `PROJECT_DOCUMENTATION.md` dosyasına bakınız (2400+ satır mimari detay, API referansı, deployment guide).
+**Note:** For detailed technical documentation, see `PROJECT_DOCUMENTATION.md` (2400+ lines of architecture details, API reference, deployment guide).
